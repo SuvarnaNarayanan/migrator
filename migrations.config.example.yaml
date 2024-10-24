@@ -1,0 +1,13 @@
+# Migrations Database Configuration
+migration:
+  dbname: "migrations"
+  tablename: "migrations"
+  dir: "migrations" # this is where sql files are stored
+
+# Source Database Configuration
+targetdb:
+  driver: "sqlite3 | mysql | postgres"
+  datasource: ""
+  username: ""
+  password: ""
+
