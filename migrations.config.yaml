@@ -1,12 +1,9 @@
-# Migrations Database Configuration
 migration:
-  dbname: "migrations"
-  tablename: "migrations"
-  dir: "migrations" # this is where sql files are stored
-
-# Source Database Configuration
+    dbname: migrations
+    tablename: migrations
+    dir: migrations
 targetdb:
-  driver: "sqlite3"
-  datasource: "./example.db"
-  username: ""
-  password: ""
+    driver: sqlite3
+    datasource: ""
+    username: ""
+    password: ""

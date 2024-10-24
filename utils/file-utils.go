@@ -48,11 +48,16 @@ func ReadAllSQLFiles(mDir string, mdb *sql.DB) ([]SQLFile, error) {
 		return nil
 	})
 	SortFilesById(files)
-	return files, &MigratorError{
-		SysErr: err.Error(),
-		Code:   MIGRATION_SQL_FILE_CANNOT_BE_READ,
-		Hint:   "SQL files cannot be read",
+	var errorString string
+	if err != nil {
+		errorString = err.Error()
+		return nil, &MigratorError{
+			SysErr: errorString,
+			Code:   MIGRATION_SQL_FILE_CANNOT_BE_READ,
+			Hint:   "SQL files cannot be read",
+		}
 	}
+	return files, nil
 }
 
 func ReadContentFromFile(path string) (string, error) {

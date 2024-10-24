@@ -27,10 +27,14 @@ func main() {
 
 	rOptions := RunTimeOptions{}
 
-	rOptions.Init = *flag.Bool("init", false, "Initialize the migrations database, table and folder if it does not exist")
-	rOptions.GenerateSQLFile = *flag.Bool("generate", false, "Generate a new migration sql file")
-	rOptions.MakeMigrations = *flag.Bool("makemigrations", false, "Make migrations")
-	rOptions.Migrate = *flag.Bool("migrate", false, "Migrate")
+	flag.BoolVar(&rOptions.Init, "init", false, "Initialize the migrations database, table and folder if it does not exist")
+	flag.BoolVar(&rOptions.GenerateSQLFile, "generate", false, "Generate a new migration sql file")
+	flag.BoolVar(&rOptions.MakeMigrations, "makemigrations", false, "Make migrations")
+	flag.BoolVar(&rOptions.Migrate, "migrate", false, "Migrate the pending migrations")
+
+	flag.Parse()
+
+	fmt.Printf("Init: %v\nGenerate: %v\nMake: %v\nMigrate: %v\n", rOptions.Init, rOptions.GenerateSQLFile, rOptions.MakeMigrations, rOptions.Migrate)
 
 	if rOptions.Init {
 		utils.Init()
@@ -137,6 +141,7 @@ func main() {
 		Migrate(mConfig, mdb, files, tdb)
 		return
 	}
+	fmt.Println("No command specified")
 }
 
 func MakeMigrations(mConfig *utils.MigratorConfig, mdb *sql.DB, fileNames []utils.SQLFile) {
