@@ -7,6 +7,8 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+
+	"gopkg.in/yaml.v3"
 )
 
 type SQLFile struct {
@@ -46,7 +48,11 @@ func ReadAllSQLFiles(mDir string, mdb *sql.DB) ([]SQLFile, error) {
 		return nil
 	})
 	SortFilesById(files)
-	return files, err
+	return files, &MigratorError{
+		SysErr: err.Error(),
+		Code:   MIGRATION_SQL_FILE_CANNOT_BE_READ,
+		Hint:   "SQL files cannot be read",
+	}
 }
 
 func ReadContentFromFile(path string) (string, error) {
@@ -55,4 +61,46 @@ func ReadContentFromFile(path string) (string, error) {
 		return "", err
 	}
 	return string(content), nil
+}
+
+func Init() error {
+
+	// Create migration directory and empty example migration config file
+
+	if _, err := os.Stat("migrations"); os.IsNotExist(err) {
+		err = os.Mkdir("migrations", 0755)
+		if err != nil {
+			return &MigratorError{
+				SysErr: err.Error(),
+				Code:   MIGRATION_DIR_CANNOT_BE_CREATED,
+				Hint:   "Please make sure you have the necessary permissions to create a directory in the root of your project",
+			}
+		}
+	}
+
+	m := &MigratorConfig{
+		Migration: Migration{
+			DbName:    "migrations",
+			TableName: "migrations",
+			Dir:       "migrations",
+		},
+		TargetDbInfo: TargetDbInfo{
+			Driver:     "sqlite3 | mysql | postgres",
+			DataSource: "",
+			UserName:   "",
+			Password:   "",
+		},
+	}
+
+	mBytes, err := yaml.Marshal(m)
+	if err != nil {
+		return err
+	}
+
+	err = os.WriteFile("migrations.config.yaml", mBytes, 0644)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
