@@ -39,7 +39,7 @@ func GenerateUniqueName(db *sql.DB, op string, desc string) (string, error) {
 
 	op = strings.ToUpper(op)
 	desc = strings.ToUpper(desc)
-	desc = strings.ReplaceAll(desc, " ", "_")
+	desc = strings.Join(strings.Fields(desc), "_")
 
 	if !isValidOperation(op) {
 		return "", fmt.Errorf("invalid operation: %s, can only be one of CREATE | UPDATE | DELETE", op)
