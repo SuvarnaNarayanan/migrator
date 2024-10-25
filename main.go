@@ -22,6 +22,7 @@ type RunTimeOptions struct {
 	GenerateSQLFile bool
 	MakeMigrations  bool
 	Migrate         bool
+	FakeMigrate     bool
 }
 
 func main() {
@@ -35,6 +36,7 @@ func main() {
 	flag.BoolVar(&rOptions.GenerateSQLFile, "generate", false, "Generate a new migration sql file")
 	flag.BoolVar(&rOptions.MakeMigrations, "makemigrations", false, "Make migrations")
 	flag.BoolVar(&rOptions.Migrate, "migrate", false, "Migrate the pending migrations")
+	flag.BoolVar(&rOptions.FakeMigrate, "fake", false, "Fake migrate the pending migrations")
 	flag.Parse()
 
 	if sysArg == "init" {
@@ -62,6 +64,8 @@ func main() {
 	migrate: Migrate the pending migrations
 		`)
 		return
+	} else if sysArg == "fake" {
+		rOptions.FakeMigrate = true
 	}
 
 	if rOptions.Init {
@@ -170,9 +174,26 @@ func main() {
 			utils.PrintError(err)
 			return
 		}
-		Migrate(mConfig, mdb, files, tdb)
+		Migrate(mConfig, mdb, files, tdb, false)
 		return
 	}
+
+	if rOptions.FakeMigrate {
+		var files []utils.SQLFile
+		dir, err := mConfig.GetMigrationsDir()
+		if err != nil {
+			utils.PrintError(err)
+			return
+		}
+		files, err = utils.ReadAllSQLFiles(dir, mdb)
+		if err != nil {
+			utils.PrintError(err)
+			return
+		}
+		Migrate(mConfig, mdb, files, tdb, true)
+		return
+	}
+
 	fmt.Println("No command specified")
 }
 
@@ -195,7 +216,7 @@ func MakeMigrations(mConfig *utils.MigratorConfig, mdb *sql.DB, fileNames []util
 	}
 }
 
-func Migrate(mConfig *utils.MigratorConfig, mdb *sql.DB, fileNames []utils.SQLFile, tdb *sql.DB) {
+func Migrate(mConfig *utils.MigratorConfig, mdb *sql.DB, fileNames []utils.SQLFile, tdb *sql.DB, fake bool) {
 
 	tableName, err := mConfig.GetMigrationsTableName()
 	if err != nil {
@@ -208,13 +229,15 @@ func Migrate(mConfig *utils.MigratorConfig, mdb *sql.DB, fileNames []utils.SQLFi
 	}
 
 	for _, f := range fileNames {
-		err := utils.RunMigration(tdb, f.Path)
-		if err != nil {
-			err := utils.UpdateMigrationRecord(mdb, f.FileName, "FAILED", tableName)
+		if !fake {
+			err := utils.RunMigration(tdb, f.Path)
 			if err != nil {
-				panic(err)
+				err := utils.UpdateMigrationRecord(mdb, f.FileName, "FAILED", tableName)
+				if err != nil {
+					panic(err)
+				}
+				continue
 			}
-			continue
 		}
 		err = utils.UpdateMigrationRecord(mdb, f.FileName, "COMPLETED", tableName)
 		if err != nil {
