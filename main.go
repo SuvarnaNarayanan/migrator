@@ -154,6 +154,7 @@ func main() {
 			utils.PrintError(err)
 			return
 		}
+		files = utils.FilterFiles(files, mdb)
 		if len(files) == 0 {
 			fmt.Println("No migrations to initialize")
 			return

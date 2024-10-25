@@ -31,7 +31,7 @@ func CheckIfFileHasProperName(fileName string) bool {
 	id := parts[0]
 	_, err := strconv.Atoi(id)
 	if err != nil {
-		return false
+		panic(err)
 	}
 	op := parts[1]
 	if !isValidOperation(op) {
@@ -137,4 +137,23 @@ func Init() error {
 	}
 
 	return nil
+}
+
+func CheckIfMigrationHasARecord(db *sql.DB, fileName string) bool {
+	rows, err := db.Query("SELECT 1 FROM migrations WHERE file_name = ?", fileName)
+	if err != nil {
+		panic(err)
+	}
+	defer rows.Close()
+	return rows.Next()
+}
+
+func FilterFiles(files []SQLFile, db *sql.DB) []SQLFile {
+	var filteredFiles []SQLFile
+	for _, f := range files {
+		if !CheckIfMigrationHasARecord(db, f.FileName) {
+			filteredFiles = append(filteredFiles, f)
+		}
+	}
+	return filteredFiles
 }
