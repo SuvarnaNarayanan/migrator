@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"migrator/utils"
+	"os"
 
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
@@ -27,14 +28,41 @@ func main() {
 
 	rOptions := RunTimeOptions{}
 
+	sysArg := os.Args[1]
+
+	// make this into command line args
 	flag.BoolVar(&rOptions.Init, "init", false, "Initialize the migrations database, table and folder if it does not exist")
 	flag.BoolVar(&rOptions.GenerateSQLFile, "generate", false, "Generate a new migration sql file")
 	flag.BoolVar(&rOptions.MakeMigrations, "makemigrations", false, "Make migrations")
 	flag.BoolVar(&rOptions.Migrate, "migrate", false, "Migrate the pending migrations")
-
 	flag.Parse()
 
-	fmt.Printf("Init: %v\nGenerate: %v\nMake: %v\nMigrate: %v\n", rOptions.Init, rOptions.GenerateSQLFile, rOptions.MakeMigrations, rOptions.Migrate)
+	if sysArg == "init" {
+		rOptions.Init = true
+	} else if sysArg == "generate" {
+		rOptions.GenerateSQLFile = true
+	} else if sysArg == "g" {
+		rOptions.GenerateSQLFile = true
+	} else if sysArg == "makemigrations" {
+		rOptions.MakeMigrations = true
+	} else if sysArg == "migrate" {
+		rOptions.Migrate = true
+	} else if sysArg == "m" {
+		rOptions.Migrate = true
+	} else if sysArg == "mm" {
+		rOptions.MakeMigrations = true
+	} else if sysArg == "i" {
+		rOptions.Init = true
+	} else if sysArg == "help" {
+		fmt.Println(`
+	Commands:
+	init: Initialize the migrations database, table and folder if it does not exist
+	generate: Generate a new migration sql file
+	makemigrations: Make migrations
+	migrate: Migrate the pending migrations
+		`)
+		return
+	}
 
 	if rOptions.Init {
 		utils.Init()

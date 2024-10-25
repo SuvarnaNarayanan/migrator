@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -18,11 +19,22 @@ func GenerateUniqueName(db *sql.DB, op string, desc string) (string, error) {
 	// DB-OPERATION: db operation - CREATE, UPDATE, DELETE
 	// DESCRIPTOR: short description of the operation
 
-	lastRecord := db.QueryRow("SELECT id FROM migrations ORDER BY id DESC LIMIT 1")
+	lastRecord := db.QueryRow("SELECT file_name FROM migrations ORDER BY id DESC LIMIT 1")
+	var maxIdString string
 	var maxId int
 	err := lastRecord.Scan(&maxId)
 	if err != nil {
 		maxId = 1
+	} else {
+		maxIdString = strings.Split(maxIdString, "_")[0]
+		maxId, err = strconv.Atoi(maxIdString)
+		if err != nil {
+			return "", &MigratorError{
+				SysErr: err.Error(),
+				Code:   IMPROPRER_MIGRATION_FILE_NAME,
+				Hint:   "Please make sure the migration file name is in the correct format - ID_DB-OPERATION_DESCRIPTOR where ID is an integer, it is followed by an underscore, followed by the operation (CREATE, UPDATE, DELETE) and then the descriptor. \n Looks like you might have the offending file already as a record in the migrations table - consider updating the file name manually.",
+			} // this should never happen
+		}
 	}
 
 	op = strings.ToUpper(op)

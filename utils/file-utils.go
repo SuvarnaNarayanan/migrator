@@ -97,14 +97,16 @@ func Init() error {
 		},
 	}
 
-	mBytes, err := yaml.Marshal(m)
-	if err != nil {
-		return err
-	}
+	if _, err := os.Stat("migrations.config.yaml"); os.IsNotExist(err) {
+		mBytes, err := yaml.Marshal(m)
+		if err != nil {
+			return err
+		}
 
-	err = os.WriteFile("migrations.config.yaml", mBytes, 0644)
-	if err != nil {
-		return err
+		err = os.WriteFile("migrations.config.yaml", mBytes, 0644)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
