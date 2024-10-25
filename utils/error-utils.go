@@ -1,7 +1,7 @@
 package utils
 
 const (
-	CONFIG_FILE_NOT_FOUND = 0
+	CONFIG_FILE_NOT_FOUND = iota
 	YAML_UNMARSHAL_ERROR
 	DATABASE_NAME_NOT_FOUND
 	MIGRATION_TABLE_NAME_NOT_FOUND
@@ -40,6 +40,7 @@ func PrintError(err error) {
 		mErr := err.(*MigratorError)
 		println("Error: ", mErr.SysErr)
 		println("Hint: ", mErr.Hint)
+		println("Code: ", mErr.Code)
 	default:
 		println("Error: ", err.Error())
 	}

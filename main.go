@@ -150,6 +150,10 @@ func main() {
 			utils.PrintError(err)
 			return
 		}
+		if len(files) == 0 {
+			fmt.Println("No migrations to initialize")
+			return
+		}
 		MakeMigrations(mConfig, mdb, files)
 		return
 	}
@@ -187,6 +191,7 @@ func MakeMigrations(mConfig *utils.MigratorConfig, mdb *sql.DB, fileNames []util
 			})
 			return
 		}
+		fmt.Println("file: ", f.FileName, " initialized")
 	}
 }
 
@@ -215,5 +220,6 @@ func Migrate(mConfig *utils.MigratorConfig, mdb *sql.DB, fileNames []utils.SQLFi
 		if err != nil {
 			panic(err)
 		}
+		fmt.Println("file: ", f.FileName, " migrated")
 	}
 }

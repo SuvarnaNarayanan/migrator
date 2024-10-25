@@ -23,6 +23,23 @@ func SortFilesById(files []SQLFile) {
 	})
 }
 
+func CheckIfFileHasProperName(fileName string) bool {
+	parts := strings.Split(fileName, "_")
+	if len(parts) != 3 {
+		return false
+	}
+	id := parts[0]
+	_, err := strconv.Atoi(id)
+	if err != nil {
+		return false
+	}
+	op := parts[1]
+	if !isValidOperation(op) {
+		return false
+	}
+	return true
+}
+
 func ReadAllSQLFiles(mDir string, mdb *sql.DB) ([]SQLFile, error) {
 	// Returns only unmigrated files in the migrations directory as specified in the config file
 
@@ -42,6 +59,13 @@ func ReadAllSQLFiles(mDir string, mdb *sql.DB) ([]SQLFile, error) {
 				FileName: fileName,
 			}
 			if !CheckIfFileIsAlreadyMigrated(mdb, fileName) {
+				if !CheckIfFileHasProperName(fileName) {
+					return &MigratorError{
+						SysErr: "None",
+						Code:   IMPROPRER_MIGRATION_FILE_NAME,
+						Hint:   "Please make sure the migration file name is in the correct format - ID_DB-OPERATION_DESCRIPTOR where ID is an integer, it is followed by an underscore, followed by the operation (CREATE, UPDATE, DELETE) and then the descriptor. Invalid file name is: " + fileName,
+					}
+				}
 				files = append(files, f)
 			}
 		}
@@ -50,6 +74,9 @@ func ReadAllSQLFiles(mDir string, mdb *sql.DB) ([]SQLFile, error) {
 	SortFilesById(files)
 	var errorString string
 	if err != nil {
+		if err.(*MigratorError) != nil {
+			return nil, err
+		}
 		errorString = err.Error()
 		return nil, &MigratorError{
 			SysErr: errorString,
