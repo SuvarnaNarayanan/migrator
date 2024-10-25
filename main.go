@@ -142,7 +142,13 @@ func main() {
 			return
 		}
 
-		utils.GenerateANewMigrationSqlFile(mdb, op, desc, dir)
+		file, err := utils.GenerateANewMigrationSqlFile(mdb, op, desc, dir)
+		if err != nil {
+			utils.PrintError(err)
+			return
+		}
+		utils.InsertNewMigrationRecord(mdb, file.FileName, "PENDING", mTableName)
+		fmt.Println("New migration file created: ", file.FileName)
 		return
 	}
 

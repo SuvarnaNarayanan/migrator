@@ -52,11 +52,15 @@ func GenerateANewMigrationDatabase(db *sql.DB) error {
 	return nil
 }
 
-func GenerateANewMigrationSqlFile(db *sql.DB, op string, desc_short string, dir string) error {
+func GenerateANewMigrationSqlFile(db *sql.DB, op string, desc_short string, dir string) (*SQLFile, error) {
 	newName, err := GenerateUniqueName(db, op, desc_short)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	os.Create(fmt.Sprintf("%s/%s.sql", dir, newName))
-	return nil
+	return &SQLFile{
+		FileName: newName,
+		Id:       -1, // does not matter
+		Path:     "", // does not matter
+	}, nil
 }
