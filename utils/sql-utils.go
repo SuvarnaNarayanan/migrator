@@ -37,7 +37,7 @@ func RunMigration(tdb *sql.DB, path string) error {
 
 func CheckIfFileIsAlreadyMigrated(db *sql.DB, fileName string) bool {
 	migrated := false
-	rows, err := db.Query("SELECT 1 FROM migrations WHERE file_name = ?", fileName)
+	rows, err := db.Query("SELECT 1 FROM migrations WHERE file_name = ? AND STATUS = 'COMPLETED'", fileName)
 	if err != nil {
 		return false
 	}
