@@ -223,8 +223,8 @@ func Migrate(mConfig *utils.MigratorConfig, mdb *sql.DB, fileNames []utils.SQLFi
 		panic(err) // This should never happen
 	}
 	canMigrate := utils.CheckIfMigrationsCanBeRun(mdb, tableName, fileNames)
-	if !canMigrate {
-		fmt.Println("No migrations to run")
+	if canMigrate != nil {
+		utils.PrintError(canMigrate)
 		return
 	}
 

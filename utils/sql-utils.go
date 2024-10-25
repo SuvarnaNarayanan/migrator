@@ -44,31 +44,47 @@ func CheckIfFileIsAlreadyMigrated(db *sql.DB, fileName string) bool {
 	return rows.Next()
 }
 
-func CheckIfMigrationsCanBeRun(db *sql.DB, mTableName string, files []SQLFile) bool {
+func CheckIfMigrationsCanBeRun(db *sql.DB, mTableName string, files []SQLFile) error {
 	// Check if there are any pending or failed records
 
 	rows, err := db.Query("SELECT 1 FROM migrations WHERE status IN ('PENDING', 'FAILED') LIMIT 1")
 	if err != nil {
-		return false
+		return &MigratorError{
+			SysErr: err.Error(),
+			Code:   MIGRATION_TABLE_CANNOT_BE_READ,
+			Hint:   "Migration table cannot be read",
+		}
 	}
 
 	defer rows.Close()
 
 	if !rows.Next() {
-		return false
+		return &MigratorError{
+			SysErr: "None",
+			Code:   NO_MIGRATIONS_TO_RUN,
+			Hint:   "No migrations to run",
+		}
 	}
 
 	// check if files are in pending or failed state
 	for _, f := range files {
 		rows, err := db.Query("SELECT 1 FROM migrations WHERE file_name = ? AND status IN ('PENDING', 'FAILED') LIMIT 1", f.FileName)
 		if err != nil {
-			return false
+			return &MigratorError{
+				SysErr: err.Error(),
+				Code:   MIGRATION_TABLE_CANNOT_BE_READ,
+				Hint:   "Migration table cannot be read",
+			}
 		}
 		defer rows.Close()
 		for !rows.Next() {
-			return false
+			return &MigratorError{
+				SysErr: "None",
+				Code:   NO_MIGRATIONS_TO_RUN,
+				Hint:   "Please make sure all migrations are in PENDING or FAILED state - " + f.FileName,
+			}
 		}
 	}
 
-	return true
+	return nil
 }
