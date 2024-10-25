@@ -3,3 +3,4 @@
 *.db
 todo.md
 *.exe
+.vscode/

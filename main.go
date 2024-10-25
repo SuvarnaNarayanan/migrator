@@ -222,7 +222,7 @@ func Migrate(mConfig *utils.MigratorConfig, mdb *sql.DB, fileNames []utils.SQLFi
 	if err != nil {
 		panic(err) // This should never happen
 	}
-	canMigrate := utils.CheckIfMigrationsCanBeRun(mdb, tableName)
+	canMigrate := utils.CheckIfMigrationsCanBeRun(mdb, tableName, fileNames)
 	if !canMigrate {
 		fmt.Println("No migrations to run")
 		return
@@ -233,10 +233,15 @@ func Migrate(mConfig *utils.MigratorConfig, mdb *sql.DB, fileNames []utils.SQLFi
 			err := utils.RunMigration(tdb, f.Path)
 			if err != nil {
 				err := utils.UpdateMigrationRecord(mdb, f.FileName, "FAILED", tableName)
+				utils.PrintError(&utils.MigratorError{
+					SysErr: err.Error(),
+					Code:   utils.SQL_EXECUTION_ERROR,
+					Hint:   "SQL execution error - please check the SQL file for errors",
+				})
 				if err != nil {
 					panic(err)
 				}
-				continue
+				return
 			}
 		}
 		err = utils.UpdateMigrationRecord(mdb, f.FileName, "COMPLETED", tableName)

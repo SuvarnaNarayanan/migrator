@@ -52,7 +52,7 @@ func CheckIfFileIsAlreadyMigrated(db *sql.DB, fileName string) bool {
 	return migrated
 }
 
-func CheckIfMigrationsCanBeRun(db *sql.DB, mTableName string) bool {
+func CheckIfMigrationsCanBeRun(db *sql.DB, mTableName string, files []SQLFile) bool {
 	// Check if there are any pending or failed records
 
 	rows, err := db.Query("SELECT 1 FROM migrations WHERE status IN ('PENDING', 'FAILED') LIMIT 1")
@@ -65,11 +65,26 @@ func CheckIfMigrationsCanBeRun(db *sql.DB, mTableName string) bool {
 	var m int
 	for rows.Next() {
 		rows.Scan(&m)
-		if m == 1 {
-			return true
+		if !(m == 1) {
+			return false
 		}
 	}
 
-	return false
+	// check if files are in pending or failed state
+	for _, f := range files {
+		rows, err := db.Query("SELECT 1 FROM migrations WHERE file_name = ? AND status IN ('PENDING', 'FAILED') LIMIT 1", f.FileName)
+		if err != nil {
+			return false
+		}
+		defer rows.Close()
+		var m int
+		for rows.Next() {
+			rows.Scan(&m)
+			if !(m == 1) {
+				return false
+			}
+		}
+	}
 
+	return true
 }
