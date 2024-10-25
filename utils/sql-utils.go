@@ -36,20 +36,12 @@ func RunMigration(tdb *sql.DB, path string) error {
 }
 
 func CheckIfFileIsAlreadyMigrated(db *sql.DB, fileName string) bool {
-	migrated := false
 	rows, err := db.Query("SELECT 1 FROM migrations WHERE file_name = ? AND STATUS = 'COMPLETED'", fileName)
 	if err != nil {
 		return false
 	}
 	defer rows.Close()
-	for rows.Next() {
-		var m int
-		rows.Scan(&m)
-		if m == 1 {
-			migrated = true
-		}
-	}
-	return migrated
+	return rows.Next()
 }
 
 func CheckIfMigrationsCanBeRun(db *sql.DB, mTableName string, files []SQLFile) bool {
@@ -62,12 +54,8 @@ func CheckIfMigrationsCanBeRun(db *sql.DB, mTableName string, files []SQLFile) b
 
 	defer rows.Close()
 
-	var m int
-	for rows.Next() {
-		rows.Scan(&m)
-		if !(m == 1) {
-			return false
-		}
+	if !rows.Next() {
+		return false
 	}
 
 	// check if files are in pending or failed state
@@ -77,12 +65,8 @@ func CheckIfMigrationsCanBeRun(db *sql.DB, mTableName string, files []SQLFile) b
 			return false
 		}
 		defer rows.Close()
-		var m int
-		for rows.Next() {
-			rows.Scan(&m)
-			if !(m == 1) {
-				return false
-			}
+		for !rows.Next() {
+			return false
 		}
 	}
 

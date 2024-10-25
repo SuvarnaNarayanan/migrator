@@ -4,6 +4,6 @@ migration:
     dir: migrations
 targetdb:
     driver: sqlite3
-    datasource: "./example.db"
+    datasource: "example.db"
     username: ""
     password: ""
