@@ -33,7 +33,7 @@ func GenerateUniqueName(db *sql.DB, op string, desc string) (string, error) {
 	var maxId int
 	err := lastRecord.Scan(&maxIdString)
 	if err != nil {
-		maxId = 1
+		maxId = 0
 	} else {
 		maxIdString = strings.Split(maxIdString, "_")[0]
 		maxId, err = strconv.Atoi(maxIdString)

@@ -49,7 +49,7 @@ func ReadAllSQLFiles(mDir string, mdb *sql.DB) ([]SQLFile, error) {
 		if !info.IsDir() && ext == ".sql" {
 			strId := strings.Split(info.Name(), "_")[0]
 			id, err := strconv.Atoi(strId)
-			fileName := info.Name()
+			fileName := strings.TrimSuffix(info.Name(), ext)
 			if err != nil {
 				return err
 			}
