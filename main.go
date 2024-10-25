@@ -29,8 +29,6 @@ func main() {
 
 	rOptions := RunTimeOptions{}
 
-	sysArg := os.Args[1]
-
 	// make this into command line args
 	flag.BoolVar(&rOptions.Init, "init", false, "Initialize the migrations database, table and folder if it does not exist")
 	flag.BoolVar(&rOptions.GenerateSQLFile, "generate", false, "Generate a new migration sql file")
@@ -38,6 +36,12 @@ func main() {
 	flag.BoolVar(&rOptions.Migrate, "migrate", false, "Migrate the pending migrations")
 	flag.BoolVar(&rOptions.FakeMigrate, "fake", false, "Fake migrate the pending migrations")
 	flag.Parse()
+
+	if len(os.Args) < 2 {
+		fmt.Println("No command specified")
+		return
+	}
+	sysArg := os.Args[1]
 
 	if sysArg == "init" {
 		rOptions.Init = true
@@ -195,7 +199,7 @@ func main() {
 		return
 	}
 
-	fmt.Println("No command specified")
+	fmt.Println("No valid command specified")
 }
 
 func MakeMigrations(mConfig *utils.MigratorConfig, mdb *sql.DB, fileNames []utils.SQLFile) {

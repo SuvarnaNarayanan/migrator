@@ -22,7 +22,7 @@ func GenerateUniqueName(db *sql.DB, op string, desc string) (string, error) {
 	lastRecord := db.QueryRow("SELECT file_name FROM migrations ORDER BY id DESC LIMIT 1")
 	var maxIdString string
 	var maxId int
-	err := lastRecord.Scan(&maxId)
+	err := lastRecord.Scan(&maxIdString)
 	if err != nil {
 		maxId = 1
 	} else {
