@@ -45,7 +45,7 @@ func GenerateUniqueName(db *sql.DB, op string, desc string) (string, error) {
 		return "", fmt.Errorf("invalid operation: %s, can only be one of CREATE | UPDATE | DELETE", op)
 	}
 
-	return fmt.Sprintf("%d_%s_%s", maxId, op, desc), nil
+	return fmt.Sprintf("%d_%s_%s", maxId+1, op, desc), nil
 }
 
 func GenerateANewMigrationDatabase(db *sql.DB) error {
