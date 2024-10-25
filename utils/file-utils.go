@@ -45,10 +45,10 @@ func ReadAllSQLFiles(mDir string, mdb *sql.DB) ([]SQLFile, error) {
 
 	var files []SQLFile
 	err := filepath.Walk(mDir, func(path string, info os.FileInfo, err error) error {
-		ext := filepath.Ext(path)
 		if err != nil {
 			return err
 		}
+		ext := filepath.Ext(path)
 		if !info.IsDir() && ext == ".sql" {
 			strId := strings.Split(info.Name(), "_")[0]
 			id, err := strconv.Atoi(strId)

@@ -16,12 +16,13 @@ I often see myself reaching out to ORM's just because they 'happen' to make migr
 ## Usage 
 
 ```
-There's four commands 
+There's five commands 
 
 1. init (i) - create initial config files
-2. makemigrations (mm) - prime the SQL files
-3. migrate (m) - actually execute the SQL files
-4. fake - set the SQL files as migrated without actual execution of SQL
+2. generate (g) - create a SQL file 
+3. makemigrations (mm) - prime the SQL files
+4. migrate (m) - actually execute the SQL files
+5. fake - set the SQL files as migrated without actual execution of SQL
 
 ```
 
@@ -39,9 +40,32 @@ migration:
     tablename: migrations
     dir: migrations
 targetdb:
-    driver: sqlite3
-    datasource: "example.db"
+    driver: sqlite3 | mysql | postgres
+    datasource: ""
     username: "" // optional - not of any significance
-    password: ""
+    password: "" // optional - not of any significance
 
 ```
+
+Make sure that the value for `datasource` is a valid connection string.
+
+for example: 
+
+```
+... postgres
+datasource: host=<host> port=<port> user=<user> password=<password> dbname=<dbname> sslmode=disable  
+...
+
+for more info - check https://pkg.go.dev/github.com/lib/pq
+
+...sqlite3
+datasource: <path to db> 
+...
+
+...mysql
+datasource: user:password@/dbname
+...
+
+for more info - check https://pkg.go.dev/github.com/go-sql-driver/mysql
+```
+
