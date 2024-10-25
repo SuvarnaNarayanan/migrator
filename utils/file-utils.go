@@ -46,6 +46,9 @@ func ReadAllSQLFiles(mDir string, mdb *sql.DB) ([]SQLFile, error) {
 	var files []SQLFile
 	err := filepath.Walk(mDir, func(path string, info os.FileInfo, err error) error {
 		ext := filepath.Ext(path)
+		if err != nil {
+			return err
+		}
 		if !info.IsDir() && ext == ".sql" {
 			strId := strings.Split(info.Name(), "_")[0]
 			id, err := strconv.Atoi(strId)
@@ -74,14 +77,16 @@ func ReadAllSQLFiles(mDir string, mdb *sql.DB) ([]SQLFile, error) {
 	SortFilesById(files)
 	var errorString string
 	if err != nil {
-		if err.(*MigratorError) != nil {
+		switch err.(type) {
+		case *MigratorError:
 			return nil, err
-		}
-		errorString = err.Error()
-		return nil, &MigratorError{
-			SysErr: errorString,
-			Code:   MIGRATION_SQL_FILE_CANNOT_BE_READ,
-			Hint:   "SQL files cannot be read",
+		default:
+			errorString = err.Error()
+			return nil, &MigratorError{
+				SysErr: errorString,
+				Code:   MIGRATION_SQL_FILE_CANNOT_BE_READ,
+				Hint:   "SQL files cannot be read",
+			}
 		}
 	}
 	return files, nil

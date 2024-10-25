@@ -5,5 +5,3 @@ migration:
 targetdb:
     driver: sqlite3
     datasource: "example.db"
-    username: ""
-    password: ""
