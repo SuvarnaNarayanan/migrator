@@ -232,12 +232,12 @@ func Migrate(mConfig *utils.MigratorConfig, mdb *sql.DB, fileNames []utils.SQLFi
 		if !fake {
 			err := utils.RunMigration(tdb, f.Path)
 			if err != nil {
-				err := utils.UpdateMigrationRecord(mdb, f.FileName, "FAILED", tableName)
 				utils.PrintError(&utils.MigratorError{
 					SysErr: err.Error(),
 					Code:   utils.SQL_EXECUTION_ERROR,
-					Hint:   "SQL execution error - please check the SQL file for errors",
+					Hint:   "SQL execution error - please check the SQL file for errors " + f.FileName,
 				})
+				err := utils.UpdateMigrationRecord(mdb, f.FileName, "FAILED", tableName)
 				if err != nil {
 					panic(err)
 				}
