@@ -12,6 +12,15 @@ func isValidOperation(op string) bool {
 	return op == "CREATE" || op == "UPDATE" || op == "DELETE"
 }
 
+func CheckIfItsUnique(db *sql.DB, fileName string) (bool, error) {
+	rows, err := db.Query("SELECT 1 FROM migrations WHERE file_name = ?", fileName)
+	if err != nil {
+		return false, err
+	}
+	defer rows.Close()
+	return !rows.Next(), nil
+}
+
 func GenerateUniqueName(db *sql.DB, op string, desc string) (string, error) {
 
 	// ID_DB-OPERATION_DESCRIPTOR
@@ -45,6 +54,18 @@ func GenerateUniqueName(db *sql.DB, op string, desc string) (string, error) {
 		return "", fmt.Errorf("invalid operation: %s, can only be one of CREATE | UPDATE | DELETE", op)
 	}
 
+	fileName := fmt.Sprintf("%d_%s_%s", maxId+1, op, desc)
+	for {
+		isUnique, err := CheckIfItsUnique(db, fileName)
+		if err != nil {
+			return "", err
+		}
+		if isUnique {
+			break
+		}
+		maxId++
+		fileName = fmt.Sprintf("%d_%s_%s", maxId, op, desc)
+	}
 	return fmt.Sprintf("%d_%s_%s", maxId+1, op, desc), nil
 }
 
