@@ -66,6 +66,7 @@ func main() {
 	generate: Generate a new migration sql file
 	makemigrations: Make migrations
 	migrate: Migrate the pending migrations
+	fake: Fake migrate the pending migrations
 		`)
 		return
 	} else if sysArg == "fake" {

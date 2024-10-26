@@ -16,13 +16,14 @@ I often see myself reaching out to ORM's just because they 'happen' to make migr
 ## Usage 
 
 ```
-There's five commands 
+There's six commands 
 
 1. init (i) - create initial config files
 2. generate (g) - create a SQL file 
 3. makemigrations (mm) - prime the SQL files
 4. migrate (m) - actually execute the SQL files
 5. fake - set the SQL files as migrated without actual execution of SQL
+6. help
 
 ```
 
@@ -69,3 +70,43 @@ datasource: user:password@/dbname
 for more info - check https://pkg.go.dev/github.com/go-sql-driver/mysql
 ```
 
+### $ migrator generate 
+
+Generate a valid SQL file to use with `migrator`. SQL files to be used with migrator needs to be named correctly. 
+
+The format is as follows:
+
+```
+ID_DBOPERATION_DESCRIPTOR
+
+ID: incrementing number
+DB-OPERATION: db operation - CREATE, UPDATE, DELETE
+DESCRIPTOR: short description of the operation
+
+example: 1_CREATE_PERSON.sql
+
+```
+
+generate command looks for the last entry in migrations table and generates an appropriate id, incremented 1 from it. 
+
+This command also inserts the record into the migrations table. 
+
+### $ migrator makemigrations
+
+Read all SQL files in the migrations directory and enters a record for each in the migration table with status as `PENDING`. 
+
+The status can be either `COMPLETED, PENDING, FAILED`.
+
+### $ migrator migrate
+
+Executes the SQL files in `PENDING/FAILED` state in migration table.
+
+### $ migrator fake
+
+Fakes the pending migrations by setting the status as `COMPLETED` without actually executing any SQL.
+
+## FAQ's
+
+### How do I integrate this with an existing system?
+
+You can capture the current state of the DB as `1_CREATE_INIT.sql` file and then mark it as migrated using `migrator fake` 
