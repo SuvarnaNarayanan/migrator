@@ -1,7 +1,0 @@
-*.sql
-/migrations
-*.db
-todo.md
-*.exe
-.vscode/
-dist/

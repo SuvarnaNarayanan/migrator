@@ -1,7 +1,0 @@
-migration:
-    dbname: migrations
-    tablename: migrations
-    dir: migrations
-targetdb:
-    driver: sqlite3
-    datasource: "example.db"
