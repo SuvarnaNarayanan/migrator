@@ -7,7 +7,7 @@ I often see myself reaching out to ORM's just because they 'happen' to make migr
 
 ⭐ Migration table is decoupled from the actual database and is maintained in a separate sqlite3 db. Anytime anyone complains about why their migration isn't working - just copy and send the sqlite3 db over.
 
-⭐ Zero installation, just download the binary apt for your hardware - here.
+⭐ Zero installation, just download the binary apt for your hardware - [here](https://github.com/SuvarnaNarayanan/migrator/releases).
 
 ⭐ Multi-platform support - windows, linux. 
 
