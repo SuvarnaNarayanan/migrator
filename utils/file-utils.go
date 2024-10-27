@@ -122,7 +122,7 @@ func Init() error {
 			Dir:       "migrations",
 		},
 		TargetDbInfo: TargetDbInfo{
-			Driver:     "sqlite3 | mysql | postgres",
+			Driver:     "sqlite | mysql | postgres",
 			DataSource: "",
 			UserName:   "",
 			Password:   "",
