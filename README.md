@@ -5,7 +5,7 @@ I often see myself reaching out to ORM's just because they 'happen' to make migr
 
 ## Features:
 
-⭐ Migration table is decoupled from the actual database and is maintained in a separate sqlite3 db. Anytime anyone complains about why their migration isn't working - just copy and send the sqlite3 db over.
+⭐ Migration table is decoupled from the actual database and is maintained in a separate sqlite db. Anytime anyone complains about why their migration isn't working - just copy and send the sqlite db over.
 
 ⭐ Zero installation, just download the binary apt for your hardware - [here](https://github.com/SuvarnaNarayanan/migrator/releases).
 
@@ -41,7 +41,7 @@ migration:
     tablename: migrations
     dir: migrations
 targetdb:
-    driver: sqlite3 | mysql | postgres
+    driver: sqlite | mysql | postgres
     datasource: ""
     username: "" // optional - not of any significance
     password: "" // optional - not of any significance
@@ -59,7 +59,7 @@ datasource: host=<host> port=<port> user=<user> password=<password> dbname=<dbna
 
 for more info - check https://pkg.go.dev/github.com/lib/pq
 
-...sqlite3
+...sqlite
 datasource: <path to db> 
 ...
 

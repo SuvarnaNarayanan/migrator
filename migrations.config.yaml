@@ -3,5 +3,5 @@ migration:
     tablename: migrations
     dir: migrations
 targetdb:
-    driver: sqlite3
+    driver: sqlite
     datasource: "example.db"

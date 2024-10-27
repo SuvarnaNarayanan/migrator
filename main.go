@@ -9,7 +9,7 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
-	_ "github.com/mattn/go-sqlite3"
+	_ "modernc.org/sqlite"
 )
 
 type NewMigrationUserInfo struct {
@@ -95,7 +95,7 @@ func main() {
 		return
 	}
 
-	mdb, err := sql.Open("sqlite3", fmt.Sprintf("./%s.db", mdbName))
+	mdb, err := sql.Open("sqlite", fmt.Sprintf("./%s.db", mdbName))
 	if err != nil {
 		utils.PrintError(&utils.MigratorError{
 			SysErr: err.Error(),
