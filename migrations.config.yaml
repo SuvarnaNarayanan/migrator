@@ -3,7 +3,7 @@ migration:
     tablename: migrations
     dir: migrations
 targetdb:
-    driver: sqlite
+    driver: sqlite 
     datasource: "./example.db"
     username: ""
     password: ""

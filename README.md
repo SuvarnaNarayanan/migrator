@@ -3,6 +3,8 @@
 
 I often see myself reaching out to ORM's just because they 'happen' to make migrations easier. Flyway and the like required me to install stuff that I didn't want to spend time on.
 
+[![intro](intro.mp4)](intro.mp4)
+
 ## Features:
 
 ⭐ Migration table is decoupled from the actual database and is maintained in a separate sqlite db. Anytime anyone complains about why their migration isn't working - just copy and send the sqlite db over.
