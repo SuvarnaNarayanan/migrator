@@ -3,7 +3,7 @@
 
 I often see myself reaching out to ORM's just because they 'happen' to make migrations easier. Flyway and the like required me to install stuff that I didn't want to spend time on.
 
-[![intro](intro.mp4)](intro.mp4)
+[![intro](https://img.youtube.com/vi/gomB5to9sgo/0.jpg)](https://youtu.be/gomB5to9sgo)
 
 ## Features:
 
