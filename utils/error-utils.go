@@ -1,5 +1,9 @@
 package utils
 
+import (
+	"errors"
+)
+
 const (
 	CONFIG_FILE_NOT_FOUND = iota
 	YAML_UNMARSHAL_ERROR
@@ -38,9 +42,11 @@ func NewConfigFileNotFoundError(err error) error {
 }
 
 func PrintError(err error) {
-	switch err.(type) {
-	case *MigratorError:
-		mErr := err.(*MigratorError)
+	var migratorError *MigratorError
+	switch {
+	case errors.As(err, &migratorError):
+		var mErr *MigratorError
+		errors.As(err, &mErr)
 		println("Error: ", mErr.SysErr)
 		println("Hint: ", mErr.Hint)
 		println("Code: ", mErr.Code)

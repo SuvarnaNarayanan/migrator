@@ -31,8 +31,23 @@ func RunMigration(tdb *sql.DB, path string) error {
 	if err != nil {
 		return err
 	}
-	_, err = tdb.Exec(content)
-	return err
+	tx, err := tdb.Begin()
+	if err != nil {
+		return err
+	}
+	_, err = tx.Exec(content)
+	if err != nil {
+		err := tx.Rollback()
+		if err != nil {
+			return err
+		}
+	}
+
+	if err := tx.Commit(); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func CheckIfFileIsAlreadyMigrated(db *sql.DB, fileName string) bool {
