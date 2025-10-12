@@ -5,5 +5,4 @@ todo.md
 *.exe
 .vscode/
 dist/
-
-dist/
+.idea/
